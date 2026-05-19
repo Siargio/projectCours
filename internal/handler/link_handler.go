@@ -1,21 +1,29 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
-	"github.com/Siargio/shortener/internal/service"
+	"github.com/Siargio/shortener/internal/domain"
 )
+
+// LinkService — интерфейс того, что нужно хендлеру от сервиса
+type LinkService interface {
+	Shorten(ctx context.Context, longURL string) (string, error)
+	GetLongURL(ctx context.Context, shortCode string) (string, error)
+	GetStats(ctx context.Context, shortCode string) (*domain.Link, error)
+}
 
 // LinkHandler — структура, содержащая HTTP-обработчики для работы со ссылками.
 // Внедряет зависимость от сервиса (dependency injection).
 type LinkHandler struct {
-	service *service.LinkService
+	service LinkService
 }
 
 // NewLinkHandler — конструктор обработчика.
 // Принимает сервис и возвращает готовый обработчик.
-func NewLinkHandler(service *service.LinkService) *LinkHandler {
+func NewLinkHandler(service LinkService) *LinkHandler {
 	return &LinkHandler{service: service}
 }
 
